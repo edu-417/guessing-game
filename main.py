@@ -86,9 +86,9 @@ def main():
 	weights = game.load_weights()
 
 	# for i in range(9):
-	# 	train('data.in', weights, asked_questions_data, answer_target_data)
+	# 	train('data_2.in', weights, asked_questions_data, answer_target_data)
 
-	# with open('test', 'a') as file:
+	# with open('test_2', 'a') as file:
 	# 	file.write('Targets: \n')
 	# 	for i in range(len(target_objects)):
 	# 		file.write('[%d] %s \n' %(i,target_objects[i]) )
@@ -128,13 +128,8 @@ def main():
 		print( 'try: %s', target_objects[r])
 
 		while(True):
-			print('asked questions:')
-			print(asked_questions)
 			tmp_weights = weights.copy()
 			question_id = game.choose_next_question(rank_target_objects, target_objects ,tmp_weights, asked_questions, questions, initial_questions)
-			print('question_id: %d' %(question_id) )
-			print('rank:')
-			game.print_top(rank_target_objects, target_objects)
 
 			if( question_id == -1):
 				choosen = game.guess(rank_target_objects, target_objects)
@@ -153,7 +148,7 @@ def main():
 
 				break
 
-			elif( question_number == 12 or question_number == 16 or question_number == 20 or question_number == 24 or question_number == 30):
+			elif( question_number >= 5  and game.check_finish(rank_target_objects, target_objects) ):
 				choosen = game.guess(rank_target_objects, target_objects)
 				if(choosen == None):
 					weights = add_target(asked_questions, target_objects, weights, questions, question_features, asked_questions_data, answer_target_data)
@@ -173,10 +168,13 @@ def main():
 						break
 
 
+			print('asked questions:')
+			print(asked_questions)
 
+			print('question_id: %d' %(question_id) )
 
-
-
+			print('rank:')
+			game.print_top(rank_target_objects, target_objects)
 
 			question_number += 1
 
