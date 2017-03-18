@@ -99,13 +99,16 @@ def update_weights_data(weights):
 	with open(WEIGHTS_DATA_FILE, 'wb') as file:
 		weights.dump(file)
 
-def load_initial_questions(questions, count = 5):
+def load_initial_questions(questions, count = 3):
 	n = len(questions)
 	count = min(count, n)
 	initial_questions = []
-	for i in range(count):
+	while count > 0 :
 		question_id = random.randint(0, n - 1)
+		if question_id in [82,87,49,113,19, 114, 116, 141, 143, 145] :
+			continue
 		initial_questions.append(question_id)
+		count -= 1
 
 	return initial_questions
 
@@ -171,13 +174,39 @@ def guess(rank_target_objects, target_objects):
 	target = top_target_objects[0]
 	return {'id': target[1], 'name':target[2]}
 
+def softmax(x):
+	#x = np.array(x,dtype = int)
+	return np.exp(x)/ np.sum(np.exp(x))
+
+def normalize(x):
+	x = np.array(x,dtype = int)
+	return (x - np.min(x)) / (np.max(x) - np.min(x))
+
+def check_finish(rank_target_objects, target_objects, top_count = 10):
+	top_targets = get_top_targets(rank_target_objects, target_objects, top_count)
+	score = np.array(top_targets)
+	# print('Score: ')
+	# print(type(score))
+	rank = softmax(normalize(score[:,0]))
+	if( rank[0] > 0.172):
+		return True
+	return False
+
 def print_top(rank_target_objects, target_objects, top_count = 10):
-	print(get_top_targets(rank_target_objects, target_objects, top_count))
+	top_targets = get_top_targets(rank_target_objects, target_objects, top_count)
+	print(type(top_targets))
+	score = np.array(top_targets)
+	print('Score: ')
+	print(type(score))
+	rank = softmax(normalize(score[:,0]))
+	for i in range( len(top_targets) ):
+		top_targets[i] = rank[i],top_targets[i][1], top_targets[i][2]
+	print( top_targets )
 
 
 def get_top_targets(rank_target_objects, target_objects, top_count = 10):
 	top_count = min(top_count, len(rank_target_objects))
-	return sorted([(value, key, target_objects[key]) for key, value in rank_target_objects.items()], reverse = True)[:top_count]
+	return sorted([[value, key, target_objects[key]] for key, value in rank_target_objects.items()], reverse = True)[:top_count]
 
 def update_local_weights(question_id, answer, asked_questions, tmp_weights, rank_target_objects):
 
@@ -236,17 +265,22 @@ def entropy(top_target_objects, question_id, current_weights):
 
 def choose_next_question(rank_target_objects, target_objects, current_weights, asked_questions, questions, initial_questions):
 
-	if len(initial_questions) > 0 :
-		question_id = initial_questions.pop()
-		return question_id
+	# if len(initial_questions) > 0 :
+	# 	question_id = initial_questions.pop()
+	# 	return question_id
 
-	print('Inside Baby')
+	# print('Inside Baby')
 
 	top_target_objects = [i for i in range( len(target_objects) )]
 
-	if len(asked_questions) > 0:
+	n = len(asked_questions)
+
+	if n > 0:
+		count = 64 // (2 ** n)
+		count = max(count, 10)
 		aux = get_top_targets(rank_target_objects, target_objects)
 		top_target_objects = [ target_object[1] for target_object in aux]
+		print('count: %d' %count)
 
 	best_entropy = float('inf')
 	best_question_id = -1
@@ -254,7 +288,7 @@ def choose_next_question(rank_target_objects, target_objects, current_weights, a
 		if question_id in asked_questions:
 			continue
 
-		if question_id in [82,87,49,113,19]:
+		if question_id in [82,87,86, 49,113,19]:
 			continue
 
 		question_entropy = entropy(top_target_objects, question_id, current_weights)
