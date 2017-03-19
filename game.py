@@ -5,12 +5,12 @@ NEW_QUESTION_SCALE = 5
 DISAGREE_SCALE = 5
 AGREE_SCALE = 2
 
-TARGET_DATA_FILE = 'target_data'
-QUESTION_DATA_FILE = 'question_data'
-FEATURE_DATA_FILE = 'feature_data'
-WEIGHTS_DATA_FILE = 'weight_data.npy'
-ASKED_QUESTIONS_DATA_FILE = 'asked_questions_data'
-ANSWER_TARGET_DATA_FILE = 'answer_target_data'
+TARGET_DATA_FILE = 'data/target_data'
+QUESTION_DATA_FILE = 'data/question_data'
+FEATURE_DATA_FILE = 'data/feature_data'
+WEIGHTS_DATA_FILE = 'data/weight_data.npy'
+ASKED_QUESTIONS_DATA_FILE = 'data/asked_questions_data'
+ANSWER_TARGET_DATA_FILE = 'data/answer_target_data'
 
 
 def init():
